@@ -1,0 +1,5 @@
+class Cherry {
+  constructor(parameters) {
+    
+  }
+}
