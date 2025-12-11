@@ -1,55 +1,67 @@
 export default class Snake {
-  #moves
 
-  constructor(context, x, y, width, height, displacementFactor) {
+  constructor(context, squareSize, x=0, y=0) {
     this.context = context
-    this.x = x
-    this.y = y
-    this.width = width
-    this.height = height
+    this.squareSize = squareSize
 
-    const contextWidth = this.context.canvas.width
-    const contextHeight = this.context.canvas.height
+    this.body = [
+      {x: x + 2, y: y},
+      {x: x + 1, y: y},
+      {x: x, y: y}
+    ]
+    this.head = { ...this.body[0] }
+  }
 
-    this.displacementFactor = displacementFactor
+  get widthBoundary() {
+    return (this.context.canvas.width / this.squareSize) - 1
+  }
 
-    this.#moves = {
-      ArrowUp: () => {
-        if (this.y === 0) return
-        this.y -= this.displacementFactor
-      },
-
-      ArrowDown: () => {
-        if ((this.y + this.height) >= contextHeight) return
-        this.y += this.displacementFactor
-      },
-      
-      ArrowLeft: () => {
-        if (this.x === 0) return
-        this.x -= this.displacementFactor
-      },
-      
-      ArrowRight: () => {
-        if ((this.x + this.width) >= contextWidth) return
-        this.x += this.displacementFactor
-      },
-    }
+  get heightBoundary() {
+    return (this.context.canvas.height / this.squareSize) - 1
   }
 
   draw() {
-    this.context.save()
-    this.context.fillStyle = '#06b100ff'
-    this.context.fillRect(
-      this.x,
-      this.y,
-      this.width,
-      this.height
-    )
-    this.context.restore()
+    const headColor = '#06b100ff'
+    const bodyColor = '#07da00ff'
+    this.body.forEach((part, i) => {
+      this.context.fillStyle = i === 0 ? headColor : bodyColor
+      this.context.fillRect(
+        part.x * this.squareSize,
+        part.y * this.squareSize,
+        this.squareSize,
+        this.squareSize
+      )
+    })
   }
 
-  move(key) {
-    this.#moves[key]()
+  move(direction) {
+    this[direction]()
+    this.body.unshift(this.head)
+    this.head = { ...this.body[0] }
+    this.body.pop()
+
     this.draw()
+  }
+
+  grow() {
+    const index = this.body.length - 1
+    const tail = { ...this.body[index] }
+    this.body.push(tail)
+  }
+
+  moveUp() {
+    this.head.y = Math.max(0, this.head.y - 1)
+  }
+
+  moveDown() {
+    this.head.y = Math.min(this.head.y + 1, this.heightBoundary)
+  }
+  
+  moveLeft() {
+    this.head.x = Math.max(0, this.head.x - 1)
+  }
+  
+  moveRight() {
+    this.head.x = Math.min(this.head.x + 1, this.widthBoundary)
   }
 }

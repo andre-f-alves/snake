@@ -1,18 +1,19 @@
-import Snake from './Snake.js'
+import Game from './Game.js'
 
 const screen = document.getElementById('screen')
-const context = screen.getContext('2d')
+const game = new Game(screen)
 
-screen.width = 600
-screen.height = 600
-
-// const displacement = 10
-
-const snake = new Snake(context, 0, 0, 30, 30, 10)
-snake.draw()
+game.drawSnake()
 
 addEventListener('keydown', (e) => {
   const key = e.code
-  context.clearRect(0, 0, screen.width, screen.height)
-  snake.move(key)
+  if (key.startsWith('Arrow')) {
+    e.preventDefault()
+    game.moveSnake(key)
+  }
+
+  if (key === 'Space') {
+    e.preventDefault()
+    game.growSnake()
+  }
 })

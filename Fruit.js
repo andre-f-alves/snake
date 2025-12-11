@@ -1,4 +1,4 @@
-class Cherry {
+class Fruit {
   constructor(parameters) {
     
   }
