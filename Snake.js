@@ -1,4 +1,7 @@
 export default class Snake {
+  #vectors
+  #oposite
+
   constructor(squareSize, x=0, y=0) {
     this.squareSize = squareSize
 
@@ -7,29 +10,44 @@ export default class Snake {
       { x: x + 1, y: y },
       { x: x, y: y }
     ]
-    this.head = { ...this.body[0] }
 
-    this.currentDirection = 'Right'
+    this.currentDirection = 'right'
+
+    this.#vectors = {
+      up: { x: 0, y: -1 },
+      down: { x: 0, y: +1 },
+      right: { x: +1, y: 0 },
+      left: { x: -1, y: 0 }
+    }
+
+    this.#oposite = {
+      up: 'down',
+      down: 'up',
+      right: 'left',
+      left: 'right',
+    }
+  }
+
+  get head() {
+    return this.body[0]
   }
 
   changeDirection(direction) {
-    if (
-      (direction === 'Left' && this.currentDirection === 'Right') ||
-      (direction === 'Right' && this.currentDirection === 'Left') ||
-      (direction === 'Up' && this.currentDirection === 'Down') ||
-      (direction === 'Down' && this.currentDirection === 'Up')
-    ) return
+    if (this.currentDirection === this.#oposite[direction]) return
 
     this.currentDirection = direction
   }
 
   move() {
     const direction = this.currentDirection
-    const method = `move${direction}`
-    this[method]()
+    const vector = this.#vectors[direction]
 
-    this.body.unshift(this.head)
-    this.head = { ...this.body[0] }
+    const newHead = {
+      x: this.head.x + vector.x,
+      y: this.head.y + vector.y
+    }
+
+    this.body.unshift(newHead)
     this.body.pop()
   }
 
@@ -37,25 +55,5 @@ export default class Snake {
     const index = this.body.length - 1
     const tail = { ...this.body[index] }
     this.body.push(tail)
-  }
-
-  moveUp() {
-    this.head.y -= 1
-    // this.head.y = Math.max(0, this.head.y - 1)
-  }
-
-  moveDown() {
-    this.head.y += 1
-    // this.head.y = Math.min(this.screenHeightBoundary, this.head.y + 1)
-  }
-  
-  moveLeft() {
-    this.head.x -= 1
-    // this.head.x = Math.max(0, this.head.x - 1)
-  }
-  
-  moveRight() {
-    this.head.x += 1
-    // this.head.x = Math.min(this.screenWidthBoundary, this.head.x + 1)
   }
 }
