@@ -1,10 +1,19 @@
 export default class Snake {
-  #vectors
-  #oposite
+  #vectors = {
+    up: { x: 0, y: -1 },
+    down: { x: 0, y: +1 },
+    right: { x: +1, y: 0 },
+    left: { x: -1, y: 0 }
+  }
 
-  constructor(squareSize, x=0, y=0) {
-    this.squareSize = squareSize
+  #oposite = {
+    up: 'down',
+    down: 'up',
+    right: 'left',
+    left: 'right',
+  }
 
+  constructor(x, y) {
     this.body = [
       { x: x + 2, y: y },
       { x: x + 1, y: y },
@@ -12,20 +21,6 @@ export default class Snake {
     ]
 
     this.currentDirection = 'right'
-
-    this.#vectors = {
-      up: { x: 0, y: -1 },
-      down: { x: 0, y: +1 },
-      right: { x: +1, y: 0 },
-      left: { x: -1, y: 0 }
-    }
-
-    this.#oposite = {
-      up: 'down',
-      down: 'up',
-      right: 'left',
-      left: 'right',
-    }
   }
 
   get head() {

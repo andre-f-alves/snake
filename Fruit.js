@@ -1,6 +1,5 @@
 export default class Fruit {
-  constructor(squareSize, x, y) {
-    this.squareSize = squareSize
+  constructor(x, y) {
     this.x = x
     this.y = y
   }
