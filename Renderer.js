@@ -25,6 +25,14 @@ export default class Renderer {
         this.squareSize,
         this.squareSize
       )
+
+      // this.context.strokeStyle = '#fff'
+      // this.context.strokeRect(
+      //   part.x * this.squareSize,
+      //   part.y * this.squareSize,
+      //   this.squareSize,
+      //   this.squareSize
+      // )
     })
   }
 
@@ -36,6 +44,14 @@ export default class Renderer {
       this.squareSize,
       this.squareSize
     )
+
+    // this.context.strokeStyle = '#fff'
+    // this.context.strokeRect(
+    //   fruit.x * this.squareSize,
+    //   fruit.y * this.squareSize,
+    //   this.squareSize,
+    //   this.squareSize
+    // )
   }
 
   clearScreen() {

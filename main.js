@@ -1,15 +1,14 @@
 import Game from './Game.js'
 
+const startButton = document.getElementById('start')
+
 const screen = document.getElementById('screen')
 const game = new Game(screen, 600, 600)
 
-game.render()
+startButton.addEventListener('click', () => game.render())
 
-addEventListener('keydown', (e) => {
-  const key = e.code
-  // console.log(e)
-  if (key.startsWith('Arrow')) {
-    e.preventDefault()
-    game.changeSnakeDirection(key)
-  }
+const scoreOutput = document.getElementById('score')
+
+setInterval(() => {
+  scoreOutput.textContent = game.score
 })

@@ -1,15 +1,10 @@
+import Renderer from './Renderer.js'
+import InputHandler from './InputHandler.js'
 import Snake from './Snake.js'
 import Fruit from './Fruit.js'
 
 export default class Game {
   #intervalID = null
-  #keyMap = {
-    ArrowUp: 'up',
-    ArrowDown: 'down',
-    ArrowRight: 'right',
-    ArrowLeft: 'left'
-  }
-
   #score
 
   constructor(screen, width, height) {
@@ -21,9 +16,18 @@ export default class Game {
 
     this.squareSize = 20
 
+    this.renderer = new Renderer(
+      this.screen,
+      this.squareSize
+    )
+
+    this.inputHandler = new InputHandler(this)
+
     this.frameInterval = 1000 / 15
 
     this.snake = new Snake(0, 0)
+    this.snakeDirectionsQueue = []
+
     this.fruit = null
 
     this.#score = 0
@@ -56,13 +60,24 @@ export default class Game {
   }
 
   render() {
+    this.snake = new Snake(0, 0)
+    this.snakeDirectionsQueue = []
+    this.fruit = null
+    this.#score = 0
+
     this.#intervalID = setInterval(() => {
-      this.clearScreen()
-      this.drawSnake()
+      this.renderer.clearScreen()
+      
+      this.renderer.renderSnake(this.snake, '#06b100ff', '#07da00ff')
+
+      if (this.snakeDirectionsQueue.length) {
+        const direction = this.dequeueDirection()
+        this.snake.changeDirection(direction)
+      }
       this.moveSnake()
 
       this.spawnFruit()
-      this.drawFruit()
+      this.renderer.renderFruit(this.fruit, '#ff0055ff')
 
       if (this.fruitWasEaten()) {
         this.removeFruit()
@@ -74,8 +89,6 @@ export default class Game {
         this.detectWallCollision() ||
         this.detectSelfCollision()
       ) {
-        console.log(this.#score)
-        this.#score = 0
         this.stopRender()
       }
     }, this.frameInterval)
@@ -83,37 +96,20 @@ export default class Game {
 
   stopRender() {
     clearInterval(this.#intervalID)
-  }
-
-  clearScreen() {
-    this.context.clearRect(0, 0, this.screenWidth, this.screenHeight)
-  }
-
-  drawSnake() {
-    const headColor = '#06b100ff'
-    const bodyColor = '#07da00ff'
-
-    const snakeBody = this.snake.body
-    snakeBody.forEach((part, i) => {
-      this.context.fillStyle = i === 0 ? headColor : bodyColor
-      this.context.fillRect(
-        part.x * this.squareSize,
-        part.y * this.squareSize,
-        this.squareSize,
-        this.squareSize
-      )
-    })
+    this.#intervalID = null
   }
 
   moveSnake() {
     this.snake.move()
   }
 
-  changeSnakeDirection(key) {
-    const direction = this.#keyMap[key]
+  enqueueDirection(direction) {
     if (!direction) return
-    
-    this.snake.changeDirection(direction)
+    this.snakeDirectionsQueue.push(direction)
+  }
+
+  dequeueDirection() {
+    return this.snakeDirectionsQueue.shift()
   }
 
   growSnake() {
@@ -152,27 +148,14 @@ export default class Game {
       
     const snakeBody = this.snake.body
     const isSnakePosition = () => (
-      snakeBody.some(part => part.x === x && part.y === y)
+      snakeBody.some(part => part.x === Math.floor(x) && part.y === Math.floor(y))
     )
-
     while (isSnakePosition()) {
       x = Math.random() * this.screenBoundaries[0] + 1
       y = Math.random() * this.screenBoundaries[1] + 1
     }
 
     this.fruit = new Fruit(Math.floor(x), Math.floor(y))
-  }
-
-  drawFruit() {
-    const fruit = this.fruit
-
-    this.context.fillStyle = '#ff0055ff'
-    this.context.fillRect(
-      fruit.x * this.squareSize,
-      fruit.y * this.squareSize,
-      this.squareSize,
-      this.squareSize
-    )
   }
 
   fruitWasEaten() {
