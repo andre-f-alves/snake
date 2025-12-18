@@ -31,6 +31,9 @@ export default class Game {
     this.fruit = null
 
     this.#score = 0
+
+    this.render()
+    this.needReset = false
   }
 
   get screenWidth() {
@@ -59,13 +62,34 @@ export default class Game {
     return this.#score
   }
 
-  render() {
-    this.snake = new Snake(0, 0)
-    this.snakeDirectionsQueue = []
-    this.fruit = null
-    this.#score = 0
+  get isRunning() {
+    return this.#intervalID !== null
+  }
+
+  start() {
+    if (this.needReset) this.reset()
 
     this.#intervalID = setInterval(() => {
+      this.render()
+      
+      if (this.fruitWasEaten()) {
+        this.removeFruit()
+        this.growSnake()
+        this.#score++
+      }
+
+      if (
+        this.detectWallCollision() ||
+        this.detectSelfCollision()
+      ) {
+        this.stop()
+        this.needReset = true
+      }
+    }, this.frameInterval)
+
+  }
+
+  render() {
       this.renderer.clearScreen()
       
       this.renderer.renderSnake(this.snake, '#06b100ff', '#07da00ff')
@@ -78,26 +102,19 @@ export default class Game {
 
       this.spawnFruit()
       this.renderer.renderFruit(this.fruit, '#ff0055ff')
-
-      if (this.fruitWasEaten()) {
-        this.removeFruit()
-        this.growSnake()
-        this.#score++
-      }
-
-      if (
-        this.detectWallCollision() ||
-        this.detectSelfCollision()
-      ) {
-        this.stopRender()
-      }
-    }, this.frameInterval)
   }
 
-  stopRender() {
+  stop() {
     clearInterval(this.#intervalID)
     this.#intervalID = null
   }
+
+  reset() {
+    this.snake = new Snake(0, 0)
+    this.snakeDirectionsQueue = []
+    this.fruit = null
+    this.#score = 0
+  }  
 
   moveSnake() {
     this.snake.move()
