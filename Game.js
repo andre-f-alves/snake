@@ -7,19 +7,16 @@ export default class Game {
   #intervalID = null
   #score
 
-  constructor(screen, width, height) {
+  constructor(screen, width, height, squareSize) {
     this.screen = screen
     this.context = screen.getContext('2d')
     
     this.screenWidth = width
     this.screenHeight = height
 
-    this.squareSize = 20
+    this.squareSize = squareSize
 
-    this.renderer = new Renderer(
-      this.screen,
-      this.squareSize
-    )
+    this.renderer = new Renderer(this.screen, this.squareSize)
 
     this.inputHandler = new InputHandler(this)
 
@@ -34,6 +31,7 @@ export default class Game {
 
     this.render()
     this.needReset = false
+    console.log(this.screenWidth, this.screenHeight)
   }
 
   get screenWidth() {
@@ -68,6 +66,7 @@ export default class Game {
 
   start() {
     if (this.needReset) this.reset()
+    if (this.snakeDirectionsQueue.length) this.snakeDirectionsQueue = []
 
     this.#intervalID = setInterval(() => {
       this.render()
@@ -114,6 +113,8 @@ export default class Game {
     this.snakeDirectionsQueue = []
     this.fruit = null
     this.#score = 0
+
+    this.inputHandler.reset()
   }  
 
   moveSnake() {

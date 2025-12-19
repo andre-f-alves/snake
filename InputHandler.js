@@ -25,6 +25,10 @@ export default class InputHandler {
     return this.gameInstance.screen
   }
 
+  reset() {
+    this.lastDirection = null
+  }
+
   processKey(keyDownEvent) {
     const key = keyDownEvent.code
     if (key.startsWith('Arrow')) {
@@ -71,6 +75,7 @@ export default class InputHandler {
     const dy = touch.y - this.touchPoint.y
     // console.log('dx', dx, 'dy', dy)
 
+    // TODO: Adjust deadzone
     const deadzone = 8
     if (
       Math.abs(dx) < deadzone &&
