@@ -7,20 +7,12 @@ export default class Game {
   #intervalID = null
   #score
 
-  constructor(screen, width, height, squareSize) {
+  constructor(screen, screenWidth, screenHeight, squareSize) {
     this.screen = screen
-    this.context = screen.getContext('2d')
-    
-    this.screenWidth = width
-    this.screenHeight = height
 
-    this.squareSize = squareSize
-
-    this.renderer = new Renderer(this.screen, this.squareSize)
+    this.renderer = new Renderer(this.screen, screenWidth, screenHeight, squareSize)
 
     this.inputHandler = new InputHandler(this)
-
-    this.frameInterval = 1000 / 15
 
     this.snake = new Snake(0, 0)
     this.snakeDirectionsQueue = []
@@ -29,31 +21,9 @@ export default class Game {
 
     this.#score = 0
 
+    this.frameInterval = 1000 / 10
     this.render()
     this.needReset = false
-    console.log(this.screenWidth, this.screenHeight)
-  }
-
-  get screenWidth() {
-    return this.screen.width
-  }
-
-  get screenHeight() {
-    return this.screen.height
-  }
-
-  set screenWidth(value) {
-    this.screen.width = value
-  }
-
-  set screenHeight(value) {
-    this.screen.height = value
-  }
-
-  get screenBoundaries() {
-    const width = this.screenWidth / this.squareSize - 1
-    const height = this.screenHeight / this.squareSize - 1
-    return [ width, height ]
   }
 
   get score() {
@@ -147,11 +117,12 @@ export default class Game {
 
   detectWallCollision() {
     const snakeHead = this.snake.head
+    const [ screenWidthBoundary, screenHeightBoundary ] = this.renderer.screenBoundaries
     if (
       snakeHead.x < 0 ||
-      snakeHead.x > this.screenBoundaries[0] ||
+      snakeHead.x > screenWidthBoundary ||
       snakeHead.y < 0 ||
-      snakeHead.y > this.screenBoundaries[1]
+      snakeHead.y > screenHeightBoundary
     ) {
       return true
     }
@@ -161,16 +132,18 @@ export default class Game {
   spawnFruit() {
     if (this.fruit) return
 
-    let x = Math.random() * this.screenBoundaries[0] + 1
-    let y = Math.random() * this.screenBoundaries[1] + 1
+    const [ screenWidthBoundary, screenHeightBoundary ] = this.renderer.screenBoundaries
+
+    let x = Math.random() * screenWidthBoundary + 1
+    let y = Math.random() * screenHeightBoundary + 1
       
     const snakeBody = this.snake.body
     const isSnakePosition = () => (
       snakeBody.some(part => part.x === Math.floor(x) && part.y === Math.floor(y))
     )
     while (isSnakePosition()) {
-      x = Math.random() * this.screenBoundaries[0] + 1
-      y = Math.random() * this.screenBoundaries[1] + 1
+      x = Math.random() * screenWidthBoundary + 1
+      y = Math.random() * screenHeightBoundary + 1
     }
 
     this.fruit = new Fruit(Math.floor(x), Math.floor(y))

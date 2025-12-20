@@ -8,7 +8,7 @@
 html, body {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 100dvh;
 }
 
 body {
@@ -83,8 +83,23 @@ div {
   background-color: hsl(120, 100%, 40%);
 }
 
+.screen-container {
+  justify-content: center;
+  align-items: flex-start;
+  flex-grow: 1;
+}
+
 canvas {
   image-rendering: pixelated;
+  width: 100%;
+  height: auto;
   border-width: 2px;
   border-style: solid;
+}
+
+@media screen and (min-width: 890px) {
+  canvas {
+    width: auto;
+    height: 100%;
+  }
 }

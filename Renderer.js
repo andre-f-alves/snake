@@ -1,6 +1,9 @@
 export default class Renderer {
-  constructor(screen, squareSize) {
+  constructor(screen, width, height, squareSize) {
     this.screen = screen
+    this.screenWidth = width
+    this.screenHeight = height
+
     this.context = screen.getContext('2d')
     this.squareSize = squareSize
   }
@@ -11,6 +14,20 @@ export default class Renderer {
 
   get screenHeight() {
     return this.screen.height
+  }
+
+  set screenWidth(value) {
+    this.screen.width = value
+  }
+
+  set screenHeight(value) {
+    this.screen.height = value
+  }
+
+  get screenBoundaries() {
+    const width = this.screenWidth / this.squareSize - 1
+    const height = this.screenHeight / this.squareSize - 1
+    return [ width, height ]
   }
 
   renderSnake(snake, headColor, bodyColor) {

@@ -63,8 +63,6 @@ export default class InputHandler {
       x: Math.floor(changedTouch.clientX - rect.left),
       y: Math.floor(changedTouch.clientY - rect.top)
     }
-    // console.log('touchPoint', this.touchPoint)
-    // console.log('touch', touch)
 
     if (!this.touchPoint) {
       this.touchPoint = touch
@@ -73,9 +71,7 @@ export default class InputHandler {
 
     const dx = touch.x - this.touchPoint.x
     const dy = touch.y - this.touchPoint.y
-    // console.log('dx', dx, 'dy', dy)
-
-    // TODO: Adjust deadzone
+    
     const deadzone = 8
     if (
       Math.abs(dx) < deadzone &&
@@ -94,7 +90,6 @@ export default class InputHandler {
     } else {
       direction = dy > 0 ? 'down' : 'up'
     }
-    // console.log(direction)
     
     if (direction === this.lastDirection) return
 
