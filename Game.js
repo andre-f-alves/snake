@@ -12,7 +12,9 @@ export default class Game {
 
     this.renderer = new Renderer(this.screen, screenWidth, screenHeight, squareSize)
 
-    this.inputHandler = new InputHandler(this)
+    this.inputHandler = new InputHandler(this.screen, (direction) => {
+      this.enqueueDirection(direction)
+    })
 
     this.snake = new Snake(0, 0)
     this.snakeDirectionsQueue = []
@@ -22,6 +24,7 @@ export default class Game {
     this.#score = 0
 
     this.frameInterval = 1000 / 10
+    this.spawnFruit()
     this.render()
     this.needReset = false
   }
@@ -40,37 +43,39 @@ export default class Game {
 
     this.#intervalID = setInterval(() => {
       this.render()
-      
-      if (this.fruitWasEaten()) {
-        this.removeFruit()
-        this.growSnake()
-        this.#score++
-      }
-
-      if (
-        this.detectWallCollision() ||
-        this.detectSelfCollision()
-      ) {
-        this.stop()
-        this.needReset = true
-      }
+      this.update()
     }, this.frameInterval)
-
   }
 
   render() {
-      this.renderer.clearScreen()
-      
-      this.renderer.renderSnake(this.snake, '#06b100ff', '#07da00ff')
+    this.renderer.clearScreen()
+    this.renderer.renderSnake(this.snake, '#06b100ff', '#07da00ff')
 
-      if (this.snakeDirectionsQueue.length) {
-        const direction = this.dequeueDirection()
-        this.snake.changeDirection(direction)
-      }
-      this.moveSnake()
+    if (!this.fruit) return
+    this.renderer.renderFruit(this.fruit, '#ff0055ff')
+  }
 
-      this.spawnFruit()
-      this.renderer.renderFruit(this.fruit, '#ff0055ff')
+  update() {
+    if (this.snakeDirectionsQueue.length) {
+      this.snake.changeDirection(this.dequeueDirection())
+    }
+    this.snake.move()
+
+    if (!this.fruit) this.spawnFruit()
+    
+    if (this.fruitWasEaten()) {
+      this.removeFruit()
+      this.snake.grow()
+      this.#score++
+    }
+        
+    if (
+      this.detectWallCollision() ||
+      this.detectSelfCollision()
+    ) {
+      this.stop()
+      this.needReset = true
+    }
   }
 
   stop() {
@@ -83,25 +88,24 @@ export default class Game {
     this.snakeDirectionsQueue = []
     this.fruit = null
     this.#score = 0
-
-    this.inputHandler.reset()
-  }  
-
-  moveSnake() {
-    this.snake.move()
   }
 
   enqueueDirection(direction) {
     if (!direction) return
+
+    const index = this.snakeDirectionsQueue.length - 1
+    const lastDirection = this.snakeDirectionsQueue[index]
+
+    if (lastDirection && direction === lastDirection) return
+
+    const maxDirections = 3
+    if (this.snakeDirectionsQueue.length >= maxDirections) return
+
     this.snakeDirectionsQueue.push(direction)
   }
 
   dequeueDirection() {
     return this.snakeDirectionsQueue.shift()
-  }
-
-  growSnake() {
-    this.snake.grow()
   }
 
   detectSelfCollision() {
@@ -130,23 +134,21 @@ export default class Game {
   }
 
   spawnFruit() {
-    if (this.fruit) return
-
     const [ screenWidthBoundary, screenHeightBoundary ] = this.renderer.screenBoundaries
 
-    let x = Math.random() * screenWidthBoundary + 1
-    let y = Math.random() * screenHeightBoundary + 1
-      
+    let x = Math.floor(Math.random() * (screenWidthBoundary + 1))
+    let y = Math.floor(Math.random() * (screenHeightBoundary + 1))
+
     const snakeBody = this.snake.body
     const isSnakePosition = () => (
-      snakeBody.some(part => part.x === Math.floor(x) && part.y === Math.floor(y))
+      snakeBody.some(part => part.x === x && part.y === y)
     )
     while (isSnakePosition()) {
-      x = Math.random() * screenWidthBoundary + 1
-      y = Math.random() * screenHeightBoundary + 1
+      x = Math.floor(Math.random() * (screenWidthBoundary + 1))
+      y = Math.floor(Math.random() * (screenHeightBoundary + 1))
     }
 
-    this.fruit = new Fruit(Math.floor(x), Math.floor(y))
+    this.fruit = new Fruit(x, y)
   }
 
   fruitWasEaten() {
