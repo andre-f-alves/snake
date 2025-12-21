@@ -7,7 +7,7 @@ export default class Game {
   #intervalID = null
   #score
 
-  constructor(screen, screenWidth, screenHeight, squareSize) {
+  constructor(screen, screenWidth, screenHeight, squareSize, onScoreChange) {
     this.screen = screen
 
     this.renderer = new Renderer(this.screen, screenWidth, screenHeight, squareSize)
@@ -15,6 +15,8 @@ export default class Game {
     this.inputHandler = new InputHandler(this.screen, (direction) => {
       this.enqueueDirection(direction)
     })
+
+    this.onScoreChange = onScoreChange
 
     this.snake = new Snake(0, 0)
     this.snakeDirectionsQueue = []
@@ -67,6 +69,8 @@ export default class Game {
       this.removeFruit()
       this.snake.grow()
       this.#score++
+
+      this.onScoreChange(this.score)
     }
         
     if (
@@ -88,6 +92,8 @@ export default class Game {
     this.snakeDirectionsQueue = []
     this.fruit = null
     this.#score = 0
+
+    this.onScoreChange(this.score)
   }
 
   enqueueDirection(direction) {

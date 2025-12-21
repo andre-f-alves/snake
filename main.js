@@ -24,38 +24,29 @@ const themeButton = document.getElementById('theme-button')
 themeButton.addEventListener('click', changeTheme)
 
 
-function getScore(gameInstance) {
-  const intervalID = setInterval(() => {
-    if (!gameInstance.isRunning) clearInterval(intervalID)
+function updateScore(score=0) {
+  const scoreOutput = document.getElementById('score')
+  const highScoreOutput = document.getElementById('high-score')
+  
+  const highScore = localStorage.getItem('highScore') || 0
 
-    const gameScore = gameInstance.score
-    const gameHighScore = localStorage.getItem('highscore')
+  scoreOutput.textContent = score
+  highScoreOutput.textContent = highScore
 
-    scoreOutput.textContent = gameScore
-    highscoreOutput.textContent = gameHighScore || 0
-
-    if (!gameHighScore || gameScore > gameHighScore) {
-      localStorage.setItem('highscore', gameScore)
-    }
-  })
+  if (score > highScore) {
+    localStorage.setItem('highScore', score)
+    highScoreOutput.textContent = localStorage.getItem('highScore')
+  }
 }
 
-const scoreOutput = document.getElementById('score')
-const highscoreOutput = document.getElementById('highscore')
-
-const gameHighScore = localStorage.getItem('highscore')
-
-scoreOutput.textContent = 0
-highscoreOutput.textContent = gameHighScore || 0
-
+updateScore()
 
 const screen = document.getElementById('screen')
-const game = new Game(screen, 600, 600, 20)
+const game = new Game(screen, 600, 600, 20, updateScore)
 
 const startButton = document.getElementById('start')
 startButton.addEventListener('click', () => {
   if (game.isRunning) game.stop()
   game.start()
   startButton.textContent = 'Reiniciar'
-  getScore(game)
 })
