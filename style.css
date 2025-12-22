@@ -20,7 +20,7 @@ body {
   color: black;
 }
 
-.light-theme #theme-button > .light-mode-icon {
+.light-theme .theme-button > .light-mode-icon {
   display: none;
 }
 
@@ -33,7 +33,7 @@ body {
   color: white;
 }
 
-.dark-theme #theme-button > .dark-mode-icon {
+.dark-theme .theme-button > .dark-mode-icon {
   display: none;
 }
 
@@ -41,7 +41,7 @@ body {
   border-color: white;
 }
 
-#theme-button {
+.theme-button {
   all: unset;
   padding: .35rem;
   border-radius: 50%;
@@ -49,15 +49,15 @@ body {
   cursor: pointer;
 }
 
-#theme-button:hover {
+.theme-button:hover {
   background-color: hsl(0, 0%, 70%);
 }
 
-.theme-icon {
+.icon-wrapper {
   display: block;
 }
 
-div {
+body > div {
   display: flex;
   justify-content: space-between;
   align-items: center;

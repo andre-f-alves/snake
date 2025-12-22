@@ -1,4 +1,5 @@
 export default class InputHandler {
+  #dPadButtons = null
   #keyMap = {
     ArrowUp: 'up',
     ArrowDown: 'down',
@@ -61,18 +62,16 @@ export default class InputHandler {
 
     const dx = touch.x - this.touchPoint.x
     const dy = touch.y - this.touchPoint.y
+    
+    this.touchPoint = touch
 
-    const deadzone = 8
+    if (dx === 0 && dy === 0) return
+
+    const deadzone = 6
     if (
       Math.abs(dx) < deadzone &&
       Math.abs(dy) < deadzone
-    ) {
-      this.touchPoint = touch
-      return
-    }
-
-    this.touchPoint = touch
-    if (dx === 0 && dy === 0) return
+    ) return
 
     let direction = null
     if (Math.abs(dx) > Math.abs(dy)) {

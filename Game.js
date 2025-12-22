@@ -5,7 +5,7 @@ import Fruit from './Fruit.js'
 
 export default class Game {
   #intervalID = null
-  #score
+  #score = null
 
   constructor(screen, screenWidth, screenHeight, squareSize, onScoreChange) {
     this.screen = screen
