@@ -1,11 +1,17 @@
 export default class Renderer {
-  constructor(screen, width, height, squareSize) {
+  constructor(screen, screenConfig) {
     this.screen = screen
-    this.screenWidth = width
-    this.screenHeight = height
+    this.screenWidth = screenConfig.width
+    this.screenHeight = screenConfig.height
+    this.squareSize = screenConfig.squareSize
 
     this.context = screen.getContext('2d')
-    this.squareSize = squareSize
+
+    this.colors = {
+      snakeHead: '#06b100ff',
+      snakeBody: '#07da00ff',
+      fruit: '#ff0055ff'
+    }
   }
 
   get screenWidth() {
@@ -30,8 +36,11 @@ export default class Renderer {
     return [ width, height ]
   }
 
-  renderSnake(snake, headColor, bodyColor) {
+  renderSnake(snake) {
     const snakeBody = snake.body
+
+    const headColor = this.colors.snakeHead
+    const bodyColor = this.colors.snakeBody
 
     snakeBody.forEach((part, i) => {
       this.context.fillStyle = i === 0 ? headColor : bodyColor
@@ -44,8 +53,8 @@ export default class Renderer {
     })
   }
 
-  renderFruit(fruit, color) {
-    this.context.fillStyle = color
+  renderFruit(fruit) {
+    this.context.fillStyle = this.colors.fruit
     this.context.fillRect(
       fruit.x * this.squareSize,
       fruit.y * this.squareSize,

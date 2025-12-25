@@ -1,23 +1,18 @@
 import Game from './Game.js'
 
 function changeTheme() {
-  const body = document.querySelector('body')
+  const htmlElement = document.documentElement
 
   const currentTheme = localStorage.getItem('theme')
   const mode = currentTheme === 'light' ? 'dark' : 'light'
   
   localStorage.setItem('theme', mode)
-  body.classList.remove(`${currentTheme}-theme`)
-  body.classList.add(`${mode}-theme`)
+  htmlElement.classList.remove(`${currentTheme}-theme`)
+  htmlElement.classList.add(`${mode}-theme`)
 }
 
-let currentTheme = localStorage.getItem('theme')
-if (!currentTheme) {
-  localStorage.setItem('theme', 'light')
-  currentTheme = localStorage.getItem('theme')
-}
-
-document.querySelector('body')
+let currentTheme = localStorage.getItem('theme') || 'light'
+document.documentElement
   .classList.add(`${currentTheme}-theme`)
 
 const themeButton = document.getElementById('theme-button')
@@ -41,8 +36,35 @@ function updateScore(score=0) {
 
 updateScore()
 
+function calcScreenDimensions(screen) {
+  const outerPadding = getComputedStyle(document.querySelector('body')).padding.replace('px', '')
+  const minWindowWidth = 768
+  const squareSize = 15
+
+  let widthCalc = Math.floor((innerWidth - outerPadding * 2) / squareSize) * squareSize
+  const heightCalc = Math.floor((innerHeight - screen.offsetTop - outerPadding) / squareSize) * squareSize
+  
+  screen.height = heightCalc
+
+  if (innerWidth >= minWindowWidth) {
+    widthCalc = Math.floor((innerWidth - screen.offsetLeft - outerPadding) / squareSize) * squareSize
+  }
+
+  screen.width = widthCalc
+}
+
 const screen = document.getElementById('screen')
-const game = new Game(screen, 600, 600, 20, updateScore)
+
+calcScreenDimensions(screen)
+
+const screenConfig = {
+  width: screen.width,
+  height: screen.height,
+  squareSize: 15
+}
+
+const game = new Game(screen, screenConfig, updateScore)
+game.render()
 
 const startButton = document.getElementById('start')
 startButton.addEventListener('click', () => {
@@ -50,3 +72,16 @@ startButton.addEventListener('click', () => {
   game.start()
   startButton.textContent = 'Reiniciar'
 })
+
+onresize = () => {
+  calcScreenDimensions(screen)
+
+  if (game.isRunning) {
+    game.stop()
+    startButton.textContent = 'Iniciar'
+  } else {
+    game.reset()
+  }
+
+  game.render()
+}

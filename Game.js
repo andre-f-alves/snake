@@ -5,34 +5,28 @@ import Fruit from './Fruit.js'
 
 export default class Game {
   #intervalID = null
-  #score = null
+  #score = 0
+  #onScoreChange
 
-  constructor(screen, screenWidth, screenHeight, squareSize, onScoreChange) {
+
+  constructor(screen, screenConfig, onScoreChange) {
     this.screen = screen
 
-    this.renderer = new Renderer(this.screen, screenWidth, screenHeight, squareSize)
+    this.renderer = new Renderer(this.screen, screenConfig)
 
     this.inputHandler = new InputHandler(this.screen, (direction) => {
       this.enqueueDirection(direction)
     })
 
-    this.onScoreChange = onScoreChange
+    this.#onScoreChange = onScoreChange
 
     this.snake = new Snake(0, 0)
     this.snakeDirectionsQueue = []
 
     this.fruit = null
 
-    this.#score = 0
-
     this.frameInterval = 1000 / 10
-    this.spawnFruit()
-    this.render()
     this.needReset = false
-  }
-
-  get score() {
-    return this.#score
   }
 
   get isRunning() {
@@ -51,10 +45,10 @@ export default class Game {
 
   render() {
     this.renderer.clearScreen()
-    this.renderer.renderSnake(this.snake, '#06b100ff', '#07da00ff')
+    this.renderer.renderSnake(this.snake)
 
-    if (!this.fruit) return
-    this.renderer.renderFruit(this.fruit, '#ff0055ff')
+    if (!this.fruit) this.spawnFruit()
+    this.renderer.renderFruit(this.fruit)
   }
 
   update() {
@@ -62,29 +56,25 @@ export default class Game {
       this.snake.changeDirection(this.dequeueDirection())
     }
     this.snake.move()
-
-    if (!this.fruit) this.spawnFruit()
     
     if (this.fruitWasEaten()) {
       this.removeFruit()
       this.snake.grow()
       this.#score++
 
-      this.onScoreChange(this.score)
+      this.#onScoreChange(this.#score)
     }
         
     if (
       this.detectWallCollision() ||
       this.detectSelfCollision()
-    ) {
-      this.stop()
-      this.needReset = true
-    }
+    ) this.stop()
   }
 
   stop() {
     clearInterval(this.#intervalID)
     this.#intervalID = null
+    this.needReset = true
   }
 
   reset() {
@@ -93,7 +83,7 @@ export default class Game {
     this.fruit = null
     this.#score = 0
 
-    this.onScoreChange(this.score)
+    this.#onScoreChange(this.#score)
   }
 
   enqueueDirection(direction) {
@@ -127,16 +117,11 @@ export default class Game {
 
   detectWallCollision() {
     const snakeHead = this.snake.head
-    const [ screenWidthBoundary, screenHeightBoundary ] = this.renderer.screenBoundaries
-    if (
-      snakeHead.x < 0 ||
-      snakeHead.x > screenWidthBoundary ||
-      snakeHead.y < 0 ||
-      snakeHead.y > screenHeightBoundary
-    ) {
-      return true
-    }
-    return false
+    const [ maxX, maxY ] = this.renderer.screenBoundaries
+
+    const isOutOfWidthBoundary = snakeHead.x < 0 || snakeHead.x > maxX
+    const isOutOfHeightBoundary = snakeHead.y < 0 || snakeHead.y > maxY
+    return isOutOfWidthBoundary || isOutOfHeightBoundary
   }
 
   spawnFruit() {
