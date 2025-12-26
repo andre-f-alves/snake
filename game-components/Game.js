@@ -67,7 +67,9 @@ export default class Game {
 
     const selfCollisionPoint = this.detectSelfCollision()
     if (this.detectWallCollision() || selfCollisionPoint) {
-      this.renderer.renderSnakeCollisionPoint(selfCollisionPoint)
+      if (selfCollisionPoint) {
+        this.renderer.renderSnakeCollisionPoint(selfCollisionPoint)
+      }
       this.stop()
     }
   }
