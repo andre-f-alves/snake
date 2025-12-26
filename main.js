@@ -1,28 +1,26 @@
-import Game from './Game.js'
+import Game from './game-components/Game.js'
+
+let currentTheme = localStorage.getItem('theme') || 'light'
+document.documentElement.classList.add(`${currentTheme}-theme`)
 
 function changeTheme() {
   const htmlElement = document.documentElement
 
   const currentTheme = localStorage.getItem('theme')
   const mode = currentTheme === 'light' ? 'dark' : 'light'
-  
+
   localStorage.setItem('theme', mode)
   htmlElement.classList.remove(`${currentTheme}-theme`)
   htmlElement.classList.add(`${mode}-theme`)
 }
 
-let currentTheme = localStorage.getItem('theme') || 'light'
-document.documentElement
-  .classList.add(`${currentTheme}-theme`)
-
 const themeButton = document.getElementById('theme-button')
 themeButton.addEventListener('click', changeTheme)
 
-
-function updateScore(score=0) {
+function updateScore(score = 0) {
   const scoreOutput = document.getElementById('score')
   const highScoreOutput = document.getElementById('high-score')
-  
+
   const highScore = localStorage.getItem('highScore') || 0
 
   scoreOutput.textContent = score
@@ -43,7 +41,7 @@ function calcScreenDimensions(screen) {
 
   let widthCalc = Math.floor((innerWidth - outerPadding * 2) / squareSize) * squareSize
   const heightCalc = Math.floor((innerHeight - screen.offsetTop - outerPadding) / squareSize) * squareSize
-  
+
   screen.height = heightCalc
 
   if (innerWidth >= minWindowWidth) {

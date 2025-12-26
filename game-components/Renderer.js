@@ -10,6 +10,7 @@ export default class Renderer {
     this.colors = {
       snakeHead: '#06b100ff',
       snakeBody: '#07da00ff',
+      selfCollision: '#3aff33ff',
       fruit: '#ff0055ff'
     }
   }
@@ -33,7 +34,7 @@ export default class Renderer {
   get screenBoundaries() {
     const width = this.screenWidth / this.squareSize - 1
     const height = this.screenHeight / this.squareSize - 1
-    return [ width, height ]
+    return [width, height]
   }
 
   renderSnake(snake) {
@@ -51,6 +52,16 @@ export default class Renderer {
         this.squareSize
       )
     })
+  }
+
+  renderSnakeCollisionPoint(collisionPoint) {
+    this.context.fillStyle = this.colors.selfCollision
+    this.context.fillRect(
+      collisionPoint.x * this.squareSize,
+      collisionPoint.y * this.squareSize,
+      this.squareSize,
+      this.squareSize
+    )    
   }
 
   renderFruit(fruit) {

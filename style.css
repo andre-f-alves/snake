@@ -1,6 +1,6 @@
 @font-face {
   font-family: 'Jersey 10';
-  src: url('assets/fonts/Jersey10-Regular.ttf');
+  src: url('./assets/fonts/Jersey10-Regular.ttf');
 }
 
 :root {
@@ -121,7 +121,10 @@ main {
   border-width: 2px;
   border-style: solid;
   border-radius: .5rem;
-  font-size: 1.5rem;
+}
+
+.score-box output {
+  font-size: min(1.7rem, 5vw);
 }
 
 .start-button {

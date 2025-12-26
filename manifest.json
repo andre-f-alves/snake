@@ -1,0 +1,12 @@
+{
+  "name": "Snake",
+  "icons": [
+    {
+      "src": "assets/imgs/snake.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone"
+}

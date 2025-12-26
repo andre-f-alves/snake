@@ -56,7 +56,7 @@ export default class Game {
       this.snake.changeDirection(this.dequeueDirection())
     }
     this.snake.move()
-    
+
     if (this.fruitWasEaten()) {
       this.removeFruit()
       this.snake.grow()
@@ -64,11 +64,12 @@ export default class Game {
 
       this.#onScoreChange(this.#score)
     }
-        
-    if (
-      this.detectWallCollision() ||
-      this.detectSelfCollision()
-    ) this.stop()
+
+    const selfCollisionPoint = this.detectSelfCollision()
+    if (this.detectWallCollision() || selfCollisionPoint) {
+      this.renderer.renderSnakeCollisionPoint(selfCollisionPoint)
+      this.stop()
+    }
   }
 
   stop() {
@@ -106,18 +107,18 @@ export default class Game {
 
   detectSelfCollision() {
     const snakeHead = this.snake.head
-    const snakeBody = this.snake.body
+    const snakeBody = this.snake.body.slice(1)
 
-    const selfCollision = snakeBody.some((part, i) => {
-      if (i === 0) return
+    const selfCollision = snakeBody.find((part) => {
       return snakeHead.x === part.x && snakeHead.y === part.y
     })
-    return selfCollision
+
+    return selfCollision || null
   }
 
   detectWallCollision() {
     const snakeHead = this.snake.head
-    const [ maxX, maxY ] = this.renderer.screenBoundaries
+    const [maxX, maxY] = this.renderer.screenBoundaries
 
     const isOutOfWidthBoundary = snakeHead.x < 0 || snakeHead.x > maxX
     const isOutOfHeightBoundary = snakeHead.y < 0 || snakeHead.y > maxY
@@ -125,7 +126,7 @@ export default class Game {
   }
 
   spawnFruit() {
-    const [ screenWidthBoundary, screenHeightBoundary ] = this.renderer.screenBoundaries
+    const [screenWidthBoundary, screenHeightBoundary] = this.renderer.screenBoundaries
 
     let x = Math.floor(Math.random() * (screenWidthBoundary + 1))
     let y = Math.floor(Math.random() * (screenHeightBoundary + 1))
