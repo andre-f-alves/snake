@@ -1,19 +1,19 @@
 const CACHE_VERSION = 2
 const CACHE_NAME = `snake-v${CACHE_VERSION}`
 const RESOURCES = [
-  '/',
-  '/index.html',
-  '/style.css',
-  '/main.js',
-  '/game-components/Game.js',
-  '/game-components/Renderer.js',
-  '/game-components/InputHandler.js',
-  '/game-components/Snake.js',
-  '/game-components/Fruit.js',
-  '/service-worker-registration.js',
-  '/assets/imgs/snake.png',
-  '/assets/fonts/Jersey10-Regular.ttf',
-  '/manifest.json'
+  './',
+  'index.html',
+  'style.css',
+  'main.js',
+  'game-components/Game.js',
+  'game-components/Renderer.js',
+  'game-components/InputHandler.js',
+  'game-components/Snake.js',
+  'game-components/Fruit.js',
+  'service-worker-registration.js',
+  'assets/imgs/snake.png',
+  'assets/fonts/Jersey10-Regular.ttf',
+  'manifest.json'
 ]
 const CACHE_KEEP_LIST = [CACHE_NAME]
 
