@@ -29,26 +29,22 @@ export default class Snake {
 
   changeDirection(direction) {
     if (this.currentDirection === this.#oposite[direction]) return
-
     this.currentDirection = direction
   }
 
-  move() {
+  move(grow = false) {
+    const newHead = this.getNextMove()
+    this.body.unshift(newHead)
+    if (!grow) this.body.pop()
+  }
+
+  getNextMove() {
     const direction = this.currentDirection
     const vector = this.#vectors[direction]
 
-    const newHead = {
+    return {
       x: this.head.x + vector.x,
       y: this.head.y + vector.y
     }
-
-    this.body.unshift(newHead)
-    this.body.pop()
-  }
-
-  grow() {
-    const index = this.body.length - 1
-    const tail = { ...this.body[index] }
-    this.body.push(tail)
   }
 }

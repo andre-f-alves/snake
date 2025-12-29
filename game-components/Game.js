@@ -8,7 +8,6 @@ export default class Game {
   #score = 0
   #onScoreChange
 
-
   constructor(screen, screenConfig, onScoreChange) {
     this.screen = screen
 
@@ -43,9 +42,9 @@ export default class Game {
     }, this.frameInterval)
   }
 
-  render() {
+  render(selfCollisionPoint = null) {
     this.renderer.clearScreen()
-    this.renderer.renderSnake(this.snake)
+    this.renderer.renderSnake(this.snake, selfCollisionPoint)
 
     if (!this.fruit) this.spawnFruit()
     this.renderer.renderFruit(this.fruit)
@@ -55,22 +54,21 @@ export default class Game {
     if (this.snakeDirectionsQueue.length) {
       this.snake.changeDirection(this.dequeueDirection())
     }
-    this.snake.move()
-
-    if (this.fruitWasEaten()) {
-      this.removeFruit()
-      this.snake.grow()
-      this.#score++
-
-      this.#onScoreChange(this.#score)
-    }
 
     const selfCollisionPoint = this.detectSelfCollision()
     if (this.detectWallCollision() || selfCollisionPoint) {
-      if (selfCollisionPoint) {
-        this.renderer.renderSnakeCollisionPoint(selfCollisionPoint)
-      }
       this.stop()
+      this.render(selfCollisionPoint)
+    }
+
+    const willEatFruit = this.eatFruit()
+    this.snake.move(willEatFruit)
+    
+    if (willEatFruit) {
+      this.removeFruit()
+      this.#score++
+      this.#onScoreChange(this.#score)
+      this.spawnFruit()
     }
   }
 
@@ -108,54 +106,47 @@ export default class Game {
   }
 
   detectSelfCollision() {
-    const snakeHead = this.snake.head
-    const snakeBody = this.snake.body.slice(1)
+    const nextSnakeMove = this.snake.getNextMove()
+    const snakeBody = this.snake.body
 
     const selfCollision = snakeBody.find((part) => {
-      return snakeHead.x === part.x && snakeHead.y === part.y
+      return nextSnakeMove.x === part.x && nextSnakeMove.y === part.y
     })
 
     return selfCollision || null
   }
 
   detectWallCollision() {
-    const snakeHead = this.snake.head
-    const [maxX, maxY] = this.renderer.screenBoundaries
+    const nextSnakeMove = this.snake.getNextMove()
+    const [ maxX, maxY ] = this.renderer.screenBoundaries
 
-    const isOutOfWidthBoundary = snakeHead.x < 0 || snakeHead.x > maxX
-    const isOutOfHeightBoundary = snakeHead.y < 0 || snakeHead.y > maxY
+    const isOutOfWidthBoundary = nextSnakeMove.x < 0 || nextSnakeMove.x > maxX
+    const isOutOfHeightBoundary = nextSnakeMove.y < 0 || nextSnakeMove.y > maxY
     return isOutOfWidthBoundary || isOutOfHeightBoundary
   }
 
   spawnFruit() {
-    const [screenWidthBoundary, screenHeightBoundary] = this.renderer.screenBoundaries
+    const [ maxX, maxY ] = this.renderer.screenBoundaries
 
-    let x = Math.floor(Math.random() * (screenWidthBoundary + 1))
-    let y = Math.floor(Math.random() * (screenHeightBoundary + 1))
+    let x = Math.floor(Math.random() * (maxX + 1))
+    let y = Math.floor(Math.random() * (maxY + 1))
 
     const snakeBody = this.snake.body
     const isSnakePosition = () => (
       snakeBody.some(part => part.x === x && part.y === y)
     )
     while (isSnakePosition()) {
-      x = Math.floor(Math.random() * (screenWidthBoundary + 1))
-      y = Math.floor(Math.random() * (screenHeightBoundary + 1))
+      x = Math.floor(Math.random() * (maxX + 1))
+      y = Math.floor(Math.random() * (maxY + 1))
     }
 
     this.fruit = new Fruit(x, y)
   }
 
-  fruitWasEaten() {
-    const snakeHead = this.snake.head
+  eatFruit() {
+    const nextSnakeMove = this.snake.getNextMove()
     const fruit = this.fruit
-
-    if (
-      snakeHead.x === fruit.x &&
-      snakeHead.y === fruit.y
-    ) {
-      return true
-    }
-    return false
+    return nextSnakeMove.x === fruit.x && nextSnakeMove.y === fruit.y
   }
 
   removeFruit() {

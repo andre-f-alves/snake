@@ -37,14 +37,24 @@ export default class Renderer {
     return [width, height]
   }
 
-  renderSnake(snake) {
+  renderSnake(snake, selfCollisionPoint = null) {
     const snakeBody = snake.body
 
     const headColor = this.colors.snakeHead
     const bodyColor = this.colors.snakeBody
 
     snakeBody.forEach((part, i) => {
-      this.context.fillStyle = i === 0 ? headColor : bodyColor
+      if (
+        selfCollisionPoint &&
+        part.x === selfCollisionPoint.x &&
+        part.y === selfCollisionPoint.y
+      ) {
+        this.context.fillStyle = this.colors.selfCollision
+        
+      } else {
+        this.context.fillStyle = i === 0 ? headColor : bodyColor
+      }
+
       this.context.fillRect(
         part.x * this.squareSize,
         part.y * this.squareSize,

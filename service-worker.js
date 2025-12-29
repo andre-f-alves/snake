@@ -1,4 +1,5 @@
-const CACHE_NAME = 'snake-v1'
+const CACHE_VERSION = 2
+const CACHE_NAME = `snake-v${CACHE_VERSION}`
 const RESOURCES = [
   '/',
   '/index.html',
@@ -20,6 +21,7 @@ self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then((cache) => {
     return cache.addAll(RESOURCES)
   }))
+  self.skipWaiting()
 })
 
 self.addEventListener('activate', (event) => {
@@ -30,7 +32,6 @@ self.addEventListener('activate', (event) => {
       cachesToDelete.map((cacheName) => caches.delete(cacheName))
     )
   }))
-  event.waitUntil(self.clients.claim())
 })
 
 async function putInCache(request, response) {

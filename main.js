@@ -1,6 +1,10 @@
 import Game from './game-components/Game.js'
 
-let currentTheme = localStorage.getItem('theme') || 'light'
+let currentTheme = localStorage.getItem('theme')
+if (!currentTheme) {
+  currentTheme = 'light'
+  localStorage.setItem('theme', currentTheme)
+}
 document.documentElement.classList.add(`${currentTheme}-theme`)
 
 function changeTheme() {
