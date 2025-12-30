@@ -6,9 +6,11 @@ import Fruit from './Fruit.js'
 export default class Game {
   #intervalID = null
   #score = 0
+  #victory = false
   #onScoreChange
+  #onVictory
 
-  constructor(screen, screenConfig, onScoreChange) {
+  constructor(screen, screenConfig, onScoreChange, onVictory) {
     this.screen = screen
 
     this.renderer = new Renderer(this.screen, screenConfig)
@@ -18,6 +20,7 @@ export default class Game {
     })
 
     this.#onScoreChange = onScoreChange
+    this.#onVictory = onVictory
 
     this.snake = new Snake(0, 0)
     this.snakeDirectionsQueue = []
@@ -56,8 +59,9 @@ export default class Game {
     }
 
     const selfCollisionPoint = this.detectSelfCollision()
-    if (this.detectWallCollision() || selfCollisionPoint) {
+    if (this.detectWallCollision() || selfCollisionPoint || this.#victory) {
       this.stop()
+      if (this.#victory) this.#onVictory()
       this.render(selfCollisionPoint)
     }
 
@@ -83,7 +87,8 @@ export default class Game {
     this.snakeDirectionsQueue = []
     this.fruit = null
     this.#score = 0
-
+    this.#victory = false
+    this.needReset = false
     this.#onScoreChange(this.#score)
   }
 
@@ -127,19 +132,27 @@ export default class Game {
 
   spawnFruit() {
     const [ maxX, maxY ] = this.renderer.screenBoundaries
-
-    let x = Math.floor(Math.random() * (maxX + 1))
-    let y = Math.floor(Math.random() * (maxY + 1))
+    const emptySpaces = []
 
     const snakeBody = this.snake.body
-    const isSnakePosition = () => (
-      snakeBody.some(part => part.x === x && part.y === y)
+    const snakePositions = new Set(
+      snakeBody.map(part => `${part.x},${part.y}`)
     )
-    while (isSnakePosition()) {
-      x = Math.floor(Math.random() * (maxX + 1))
-      y = Math.floor(Math.random() * (maxY + 1))
+
+    for (let i = 0; i <= maxX; i++) {
+      for (let j = 0; j <= maxY; j++) {
+        if (snakePositions.has(`${i},${j}`)) continue
+        emptySpaces.push({ x: i, y: j })
+      }
     }
 
+    if (!emptySpaces.length) {
+      this.#victory = true
+      return
+    }
+
+    const randomIndex = Math.floor(Math.random() * emptySpaces.length)
+    const { x, y } = emptySpaces[randomIndex]
     this.fruit = new Fruit(x, y)
   }
 

@@ -1,4 +1,4 @@
-const CACHE_VERSION = 2
+const CACHE_VERSION = 3.2
 const CACHE_NAME = `snake-v${CACHE_VERSION}`
 const RESOURCES = [
   './',
@@ -11,7 +11,8 @@ const RESOURCES = [
   'game-components/Snake.js',
   'game-components/Fruit.js',
   'service-worker-registration.js',
-  'assets/imgs/snake.png',
+  'assets/imgs/snake-1024x1024.png',
+  'assets/imgs/snake-1024x1024-mask.png',
   'assets/fonts/Jersey10-Regular.ttf',
   'manifest.json'
 ]

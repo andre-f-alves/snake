@@ -38,6 +38,16 @@ function updateScore(score = 0) {
 
 updateScore()
 
+function showVictoryMessage() {
+  const victoryMessage = document.getElementById('victory-message')
+  victoryMessage.show()
+}
+
+function hideVictoryMessage() {
+  const victoryMessage = document.getElementById('victory-message')
+  victoryMessage.close()
+}
+
 function calcScreenDimensions(screen) {
   const outerPadding = getComputedStyle(document.querySelector('body')).padding.replace('px', '')
   const minWindowWidth = 768
@@ -65,12 +75,13 @@ const screenConfig = {
   squareSize: 15
 }
 
-const game = new Game(screen, screenConfig, updateScore)
+const game = new Game(screen, screenConfig, updateScore, showVictoryMessage)
 game.render()
 
 const startButton = document.getElementById('start')
 startButton.addEventListener('click', () => {
   if (game.isRunning) game.stop()
+  if (document.getElementById('victory-message').open) hideVictoryMessage()
   game.start()
   startButton.textContent = 'Reiniciar'
 })

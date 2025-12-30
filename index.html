@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Snake</title>
-  <link rel="shortcut icon" href="assets/imgs/snake.png" type="image/png">
+  <link rel="shortcut icon" href="assets/imgs/snake-1024x1024.png" type="image/png">
   <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
   <header>
     <div class="title">
-      <img src="assets/imgs/snake.png" alt="Snake" class="snake-image">
+      <img src="assets/imgs/snake-1024x1024.png" alt="Snake" class="snake-image">
       <h1>Snake</h1>
     </div>
 
@@ -44,6 +44,13 @@
     
     <div class="screen-container">
       <canvas id="screen"></canvas>
+      
+      <dialog id="victory-message" class="victory-message">
+        <p class="label">Vitória!</p>
+        <p class="message">
+          Parabéns! Você preencheu toda a tela com a cobra.
+        </p>
+      </dialog>
     </div>
   </main>
 

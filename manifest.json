@@ -2,12 +2,20 @@
   "name": "Snake",
   "icons": [
     {
-      "src": "assets/imgs/snake.png",
-      "sizes": "512x512",
+      "src": "assets/imgs/snake-1024x1024.png",
+      "sizes": "any",
       "type": "image/png"
+    },
+    {
+      "src": "assets/imgs/snake-1024x1024-mask.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
   "start_url": ".",
   "scope": ".",
-  "display": "standalone"
+  "display": "standalone",
+  "background_color": "#05001f",
+  "categories": ["games", "entertainement"]
 }

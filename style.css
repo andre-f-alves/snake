@@ -158,3 +158,23 @@ canvas {
   border-width: 2px;
   border-style: solid;
 }
+
+.victory-message {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: .5rem .7rem;
+  border: none;
+  border-radius: .5rem;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.678);
+}
+
+.victory-message .label {
+  font-size: 3rem;
+  color: var(--primary-color);
+}
+
+.victory-message .message {
+  color: #d4d4d4;
+}
